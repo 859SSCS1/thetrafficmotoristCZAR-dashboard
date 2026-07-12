@@ -16,6 +16,7 @@ grid/STREAM-KEYS.md
 **/dist/
 **/out/
 **/*.log
+**/*.zip
 
 # ─── Owned data archive (the CMMD capture — private, not for the repo) ───
 dashboard/cztvn-dashboard/data/archive/*
