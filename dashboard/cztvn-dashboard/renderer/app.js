@@ -19,6 +19,17 @@ async function boot() {
   $('featClose').addEventListener('click', () => { $('featured').hidden = true; });
   $('liveBtn').addEventListener('click', () => window.cztvn.openLiveBoard());
 
+  // Manual refresh — re-pull traffic tiles + congestion + incidents on demand.
+  $('refreshBtn').addEventListener('click', async () => {
+    const b = $('refreshBtn');
+    if (b.disabled) return;
+    b.disabled = true; const label = b.textContent; b.textContent = '↻ Refreshing…';
+    try {
+      if (trafficLayer) trafficLayer.redraw();   // re-request live traffic tiles
+      await refreshData();
+    } finally { b.disabled = false; b.textContent = label; }
+  });
+
   // Featured card fired by the scheduler (or the button) -> show it for the stream.
   window.cztvn.onFeaturedCard((payload) => {
     if (payload.pngPath) {
@@ -97,6 +108,10 @@ async function refreshData() {
       $('archNote').textContent = 'sample data — wire ' + current + '511';
     }
   } catch (e) { $('ticker').textContent = 'incident feed error'; }
+
+  // freshness stamp so the operator always knows how current the data is
+  $('updated').textContent = 'updated ' +
+    new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
 function drawMarkers(incs) {
