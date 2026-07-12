@@ -9,7 +9,7 @@ async function boot() {
   initMap();
   tickClock(); setInterval(tickClock, 30000);
   await selectState('GA');
-  setInterval(() => refreshData(), 5 * 60 * 1000); // refresh live data every 5 min (conserves TomTom credits)
+  setInterval(() => refreshData(), 55 * 60 * 1000); // auto-refresh every 55 min (free-tier credit-friendly; use ↻ Refresh for on-demand)
 
   $('genBtn').addEventListener('click', async () => {
     $('genBtn').textContent = 'Generating…';
