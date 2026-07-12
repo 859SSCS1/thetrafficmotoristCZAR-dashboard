@@ -1,0 +1,27 @@
+# ─── Secrets & credentials (NEVER commit) ───────────────────────────────
+**/.env
+**/.env.*
+!**/.env.example
+*.key
+*.crt
+auto.key
+auto.crt
+
+# Contributor Grid — private key material (real stream keys + consent records)
+grid/mediamtx.local.yml
+grid/STREAM-KEYS.md
+
+# ─── Dependencies & build output ────────────────────────────────────────
+**/node_modules/
+**/dist/
+**/out/
+**/*.log
+
+# ─── Owned data archive (the CMMD capture — private, not for the repo) ───
+dashboard/cztvn-dashboard/data/archive/*
+!dashboard/cztvn-dashboard/data/archive/.gitkeep
+
+# ─── Local toolchain / caches ───────────────────────────────────────────
+tools/
+.DS_Store
+Thumbs.db

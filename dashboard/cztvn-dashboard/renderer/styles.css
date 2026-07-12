@@ -1,0 +1,66 @@
+:root{
+  --ink:#0A0E1C; --panel:#121A2E; --line:#222C44; --steel:#2A3650;
+  --gold:#C9A24B; --gold-br:#E8CB7A; --green:#69B58C; --amber:#E08A6B;
+  --text:#D7DCE8; --muted:#8B93A8; --soft:#AEB6C8; --paper:#F2F4F9;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --serif:Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--serif);
+  display:flex;flex-direction:column;overflow:hidden}
+
+/* header */
+header{display:flex;justify-content:space-between;align-items:center;
+  padding:14px 22px;border-bottom:1px solid var(--line);border-top:3px solid var(--gold);flex:none}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .dot{width:9px;height:9px;background:var(--gold-br);transform:rotate(45deg);box-shadow:0 0 10px var(--gold-br)}
+.brand .title{font-size:20px;color:var(--paper);font-weight:400}
+.brand .title b{color:var(--gold-br)}
+.brand .tag{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border:1px solid var(--steel);padding:2px 8px;border-radius:20px}
+.controls{display:flex;align-items:center;gap:16px}
+.switch{display:flex;gap:6px}
+.switch button{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);
+  background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:7px 12px;cursor:pointer}
+.switch button.active{color:var(--ink);background:var(--gold-br);border-color:var(--gold-br);font-weight:700}
+.gen{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--gold-br);
+  background:transparent;border:1px solid var(--gold);border-radius:7px;padding:8px 14px;cursor:pointer}
+.gen:hover{background:rgba(201,162,75,.12)}
+.dateline{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.dateline b{color:var(--gold-br)}
+
+/* main grid */
+main{flex:1;display:grid;grid-template-columns:1fr 340px;gap:16px;padding:16px;min-height:0}
+.map-wrap{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+#map{position:absolute;inset:0;background:#0d1424}
+.map-legend{position:absolute;bottom:12px;left:12px;z-index:500;display:flex;gap:10px;align-items:center;
+  background:rgba(10,14,28,.82);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lg::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.lg.clear::before{background:var(--green)}.lg.mod::before{background:var(--gold-br)}.lg.jam::before{background:var(--amber)}
+.lg-note{color:var(--gold)}
+
+.panels{display:flex;flex-direction:column;gap:14px;min-height:0;overflow:auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.p-cap{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.big{font-size:56px;font-weight:700;color:var(--paper);line-height:1.05;margin-top:6px}
+.p-sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.gauge-panel .big{color:var(--gold-br)}
+.top-panel{border-left:4px solid var(--amber)}
+.top-road{font-size:22px;color:var(--paper);font-weight:700;margin-top:8px}
+.top-desc{font-size:14px;color:var(--soft);margin-top:3px}
+
+/* ticker */
+.ticker{flex:none;border-top:1px solid var(--line);background:#0d1526;overflow:hidden;white-space:nowrap}
+.ticker-track{display:inline-block;padding:10px 0;font-family:var(--mono);font-size:13px;color:var(--soft);
+  animation:scroll 40s linear infinite}
+.ticker-track b{color:var(--amber)}
+.ticker-track .sep{color:var(--gold);margin:0 18px}
+@keyframes scroll{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+
+/* featured overlay */
+.featured{position:fixed;inset:0;background:rgba(5,8,16,.9);display:flex;align-items:center;justify-content:center;z-index:1000}
+.featured[hidden]{display:none}
+.featured-inner{position:relative}
+.featured img{max-width:78vw;max-height:82vh;border:1px solid var(--steel);border-radius:14px;box-shadow:0 20px 80px rgba(0,0,0,.6)}
+.featured .close{position:absolute;top:-14px;right:-14px;font-family:var(--mono);font-size:12px;
+  background:var(--gold-br);color:var(--ink);border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-weight:700}

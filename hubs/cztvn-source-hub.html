@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadway &amp; Mobility — Source Hub</title>
+<style>
+  :root{
+    --ink:#0A0E1C; --panel:#121A2E; --panel2:#18213B;
+    --steel:#2A3650; --line:#222C44;
+    --gold:#C9A24B; --gold-br:#E8CB7A;
+    --text:#D7DCE8; --muted:#8B93A8; --soft:#AEB6C8;
+    --ok:#69B58C;
+    --display:Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--ink); color:var(--text);
+    font-family:var(--sans); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:920px; margin:0 auto; padding:0 18px 72px;}
+
+  /* ---------- header ---------- */
+  header{
+    border-top:3px solid var(--gold);
+    padding:26px 0 18px;
+    margin-bottom:8px;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.22em;
+    color:var(--gold); text-transform:uppercase; margin:0 0 10px;
+  }
+  .head-row{display:flex; justify-content:space-between; align-items:flex-end; gap:18px; flex-wrap:wrap;}
+  h1{
+    font-family:var(--display); font-weight:600; font-size:34px; line-height:1.08;
+    margin:0; color:#F2F4F9; letter-spacing:.2px;
+  }
+  .sub{color:var(--soft); font-size:14.5px; margin:12px 0 0; max-width:60ch;}
+  .dateline{
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+    text-align:right; white-space:nowrap; padding-bottom:4px;
+  }
+  .dateline b{color:var(--gold-br); font-weight:600;}
+
+  /* ---------- filter ---------- */
+  .filter{
+    margin:22px 0 6px; position:relative;
+  }
+  .filter input{
+    width:100%; background:var(--panel); border:1px solid var(--line);
+    color:var(--text); font-family:var(--sans); font-size:14px;
+    padding:11px 13px; border-radius:8px; outline:none;
+  }
+  .filter input:focus{border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,162,75,.18);}
+  .filter input::placeholder{color:var(--muted);}
+
+  /* ---------- groups ---------- */
+  .group{margin-top:30px;}
+  .group-head{
+    display:flex; align-items:baseline; gap:12px; margin-bottom:12px;
+    border-bottom:1px solid var(--line); padding-bottom:8px;
+  }
+  .group-head h2{
+    font-family:var(--display); font-size:20px; font-weight:600; margin:0; color:#EDEFF6;
+  }
+  .group-head .note{font-size:12.5px; color:var(--muted);}
+
+  /* ---------- source cards ---------- */
+  .src{
+    display:flex; align-items:flex-start; gap:13px;
+    background:var(--panel); border:1px solid var(--line);
+    border-left:3px solid var(--steel);
+    border-radius:9px; padding:13px 15px; margin-bottom:9px;
+    transition:border-color .15s, transform .05s, background .15s;
+  }
+  .src:hover{border-left-color:var(--gold); background:#15203a;}
+  .src .body{flex:1; min-width:0;}
+  .src .name{
+    font-weight:600; font-size:15px; color:#F0F2F8;
+    display:inline-flex; align-items:center; gap:7px;
+  }
+  .src .name .arw{color:var(--gold); font-size:13px; opacity:0; transition:opacity .15s;}
+  .src:hover .name .arw{opacity:1;}
+  .src .desc{font-size:13px; color:var(--soft); margin-top:3px;}
+  .badge{
+    font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+    border:1px solid var(--steel); color:var(--muted);
+    padding:3px 7px; border-radius:20px; white-space:nowrap; align-self:center;
+  }
+  .badge.daily{border-color:var(--gold); color:var(--gold-br);}
+  .badge.beat{border-color:#5b6b52; color:#9fc093;}
+
+  /* ---------- rundown (signature) ---------- */
+  .rundown-meta{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    margin:2px 0 14px;
+  }
+  .meter{flex:1; min-width:150px; height:6px; background:#1c2436; border-radius:4px; overflow:hidden;}
+  .meter > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--gold-br)); transition:width .3s;}
+  .count{font-family:var(--mono); font-size:12px; color:var(--gold-br); white-space:nowrap;}
+  .reset{
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    background:transparent; border:1px solid var(--line); color:var(--muted);
+    padding:6px 11px; border-radius:6px; cursor:pointer;
+  }
+  .reset:hover{border-color:var(--gold); color:var(--gold-br);}
+  .src.run{border-left-color:var(--gold);}
+  .chk{
+    appearance:none; -webkit-appearance:none;
+    width:22px; height:22px; flex:none; margin-top:1px;
+    border:1.5px solid var(--steel); border-radius:6px; background:transparent;
+    cursor:pointer; position:relative; transition:.15s;
+  }
+  .chk:checked{background:var(--gold); border-color:var(--gold);}
+  .chk:checked::after{
+    content:""; position:absolute; left:7px; top:3px; width:5px; height:10px;
+    border:solid #0A0E1C; border-width:0 2px 2px 0; transform:rotate(45deg);
+  }
+  .src.run.done{opacity:.55;}
+  .src.run.done .name{text-decoration:line-through; text-decoration-color:var(--muted);}
+
+  /* ---------- footer ---------- */
+  footer{
+    margin-top:40px; padding-top:18px; border-top:1px solid var(--line);
+    font-size:13px; color:var(--muted);
+  }
+  footer .route{color:var(--soft);}
+  footer .route b{color:var(--gold-br); font-weight:600;}
+  footer .fine{font-family:var(--mono); font-size:11px; margin-top:12px; color:#6B7488;}
+
+  @media (max-width:560px){
+    h1{font-size:27px;}
+    .dateline{text-align:left; width:100%;}
+    .head-row{align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">CZTVN Newsdesk · Working Sources</p>
+    <div class="head-row">
+      <div>
+        <h1>Roadway &amp; Mobility<br>Source Hub</h1>
+      </div>
+      <div class="dateline" id="dateline">—</div>
+    </div>
+    <p class="sub">One job: pull refreshed data fast, several times a week. Clear the rundown before a show; the periodic feeds below deposit on their own schedule. Everything is free and opens in a new tab.</p>
+  </header>
+
+  <div class="filter">
+    <input id="filter" type="text" placeholder="Filter sources — type a beat, source, or keyword">
+  </div>
+
+  <!-- ===================== RUNDOWN ===================== -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <h2>The Rundown</h2>
+      <span class="note">daily-fresh · pull each production day</span>
+    </div>
+    <div class="rundown-meta">
+      <span class="count" id="count">0 / 6 cleared</span>
+      <div class="meter"><i id="meter-fill"></i></div>
+      <button class="reset" id="reset">Reset rundown</button>
+    </div>
+
+    <label class="src run" data-text="aaa gas prices fuel daily national georgia">
+      <input type="checkbox" class="chk">
+      <span class="body">
+        <a class="name" href="https://gasprices.aaa.com/" target="_blank" rel="noopener">AAA Gas Prices <span class="arw">↗</span></a>
+        <span class="desc">National + Georgia daily average. The most reliable daily number in the space.</span>
+      </span>
+      <span class="badge daily">Daily</span>
+    </label>
+
+    <label class="src run" data-text="georgia 511 incidents closures construction traffic local">
+      <input type="checkbox" class="chk">
+      <span class="body">
+        <a class="name" href="https://511ga.org/" target="_blank" rel="noopener">Georgia 511 (GDOT) <span class="arw">↗</span></a>
+        <span class="desc">Live incidents, closures, construction across Georgia. Your local edge.</span>
+      </span>
+      <span class="badge daily">Daily</span>
+    </label>
+
+    <label class="src run" data-text="atlanta journal constitution ajc local news georgia">
+      <input type="checkbox" class="chk">
+      <span class="body">
+        <a class="name" href="https://www.ajc.com/" target="_blank" rel="noopener">Atlanta Journal-Constitution <span class="arw">↗</span></a>
+        <span class="desc">Local roadway and metro stories — the homegrown beat big outlets skip.</span>
+      </span>
+      <span class="badge daily">Daily</span>
+    </label>
+
+    <label class="src run" data-text="electrek ev transport robotaxi news">
+      <input type="checkbox" class="chk">
+      <span class="body">
+        <a class="name" href="https://electrek.co/" target="_blank" rel="noopener">Electrek <span class="arw">↗</span></a>
+        <span class="desc">EV, AV and transport news with frequent updates.</span>
+      </span>
+      <span class="badge daily">Daily</span>
+    </label>
+
+    <label class="src run" data-text="techcrunch transportation mobility startups news">
+      <input type="checkbox" class="chk">
+      <span class="body">
+        <a class="name" href="https://techcrunch.com/category/transportation/" target="_blank" rel="noopener">TechCrunch — Transportation <span class="arw">↗</span></a>
+        <span class="desc">Industry and policy moves across mobility.</span>
+      </span>
+      <span class="badge daily">Daily</span>
+    </label>
+
+    <label class="src run" data-text="google news mobility roadway robotaxi traffic search">
+      <input type="checkbox" class="chk">
+      <span class="body">
+        <a class="name" href="https://news.google.com/search?q=robotaxi%20OR%20roadway%20OR%20%22traffic%20deaths%22%20OR%20%22driver's%20license%22" target="_blank" rel="noopener">Google News — mobility scan <span class="arw">↗</span></a>
+        <span class="desc">A standing search across your beat keywords. Skim for anything that broke.</span>
+      </span>
+      <span class="badge daily">Daily</span>
+    </label>
+  </section>
+
+  <!-- ===================== WEEKLY ===================== -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <h2>Weekly</h2>
+      <span class="note">check once a week</span>
+    </div>
+
+    <a class="src" data-text="eia gasoline diesel weekly report monday prices" href="https://www.eia.gov/petroleum/gasdiesel/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">EIA Gasoline &amp; Diesel Update <span class="arw">↗</span></span>
+      <span class="desc">Monday release — the "why prices moved" backup to AAA.</span></span>
+      <span class="badge">Weekly</span>
+    </a>
+    <a class="src" data-text="waymo robotaxi blog newsroom expansion" href="https://waymo.com/blog/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Waymo — Newsroom <span class="arw">↗</span></span>
+      <span class="desc">Coverage and ride-volume updates straight from the source.</span></span>
+      <span class="badge">Weekly</span>
+    </a>
+    <a class="src" data-text="tomtom traffic index congestion cities" href="https://www.tomtom.com/traffic-index/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">TomTom Traffic Index <span class="arw">↗</span></span>
+      <span class="desc">Congestion rankings by city, including Atlanta.</span></span>
+      <span class="badge">Weekly</span>
+    </a>
+  </section>
+
+  <!-- ===================== MONTHLY ===================== -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <h2>Monthly</h2>
+      <span class="note">recurring set-pieces</span>
+    </div>
+
+    <a class="src" data-text="national safety council nsc injury facts fatalities monthly estimates" href="https://injuryfacts.nsc.org/motor-vehicle/overview/preliminary-monthly-estimates/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">NSC — Monthly Fatality Estimates <span class="arw">↗</span></span>
+      <span class="desc">Preliminary crash-death numbers, state by state, updated monthly.</span></span>
+      <span class="badge">Monthly</span>
+    </a>
+    <a class="src" data-text="cox automotive market insights car prices used new" href="https://www.coxautoinc.com/market-insights/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Cox Automotive — Market Insights <span class="arw">↗</span></span>
+      <span class="desc">New/used price movements and sales pace.</span></span>
+      <span class="badge">Monthly</span>
+    </a>
+    <a class="src" data-text="kelley blue book kbb car values prices" href="https://www.kbb.com/car-news/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Kelley Blue Book — News <span class="arw">↗</span></span>
+      <span class="desc">Pricing context and affordability angles.</span></span>
+      <span class="badge">Monthly</span>
+    </a>
+  </section>
+
+  <!-- ===================== QUARTERLY / ANNUAL ===================== -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <h2>Quarterly &amp; Annual</h2>
+      <span class="note">deep-dive fuel</span>
+    </div>
+
+    <a class="src" data-text="uber investor relations earnings quarterly gig drivers trips" href="https://investor.uber.com/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Uber — Investor Relations <span class="arw">↗</span></span>
+      <span class="desc">Quarterly earnings: trips, active drivers, gig pulse.</span></span>
+      <span class="badge">Quarterly</span>
+    </a>
+    <a class="src" data-text="lyft investor relations earnings quarterly drivers riders" href="https://investor.lyft.com/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Lyft — Investor Relations <span class="arw">↗</span></span>
+      <span class="desc">The other half of the gig scoreboard.</span></span>
+      <span class="badge">Quarterly</span>
+    </a>
+    <a class="src" data-text="nhtsa crash stats fatality analysis reporting system fars quarterly" href="https://crashstats.nhtsa.dot.gov/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">NHTSA — Crash Stats <span class="arw">↗</span></span>
+      <span class="desc">Quarterly early estimates and the FARS fatality data library.</span></span>
+      <span class="badge">Quarterly</span>
+    </a>
+    <a class="src" data-text="fhwa highway statistics licensed drivers vmt annual tables" href="https://www.fhwa.dot.gov/policyinformation/statistics.cfm" target="_blank" rel="noopener">
+      <span class="body"><span class="name">FHWA — Highway Statistics <span class="arw">↗</span></span>
+      <span class="desc">Licensed drivers by age, VMT, the authoritative annual tables.</span></span>
+      <span class="badge">Annual</span>
+    </a>
+    <a class="src" data-text="s&amp;p global mobility vehicle age fleet registrations annual" href="https://www.spglobal.com/mobility/en/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">S&amp;P Global Mobility <span class="arw">↗</span></span>
+      <span class="desc">Annual average-vehicle-age report and fleet data.</span></span>
+      <span class="badge">Annual</span>
+    </a>
+    <a class="src" data-text="bureau transportation statistics bts data" href="https://www.bts.gov/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Bureau of Transportation Statistics <span class="arw">↗</span></span>
+      <span class="desc">Broad federal mobility data when you need a deeper cut.</span></span>
+      <span class="badge">Annual</span>
+    </a>
+  </section>
+
+  <!-- ===================== ROADS-ECONOMY BEAT ===================== -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <h2>The ROADS-economy beat</h2>
+      <span class="note">who's locked out, and why</span>
+    </div>
+
+    <a class="src" data-text="fines and fees justice center debt based license suspension state" href="https://finesandfeesjusticecenter.org/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Fines and Fees Justice Center <span class="arw">↗</span></span>
+      <span class="desc">Debt-based suspension data and state-by-state breakdowns.</span></span>
+      <span class="badge beat">Beat</span>
+    </a>
+    <a class="src" data-text="free to drive coalition license suspension campaign" href="https://www.freetodrive.org/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Free to Drive <span class="arw">↗</span></span>
+      <span class="desc">The "driving while poor" story, with figures and reform tracking.</span></span>
+      <span class="badge beat">Beat</span>
+    </a>
+    <a class="src" data-text="aclu reports criminal law reform license suspension poverty" href="https://www.aclu.org/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">ACLU — Reports <span class="arw">↗</span></span>
+      <span class="desc">Structural-barrier research and case studies.</span></span>
+      <span class="badge beat">Beat</span>
+    </a>
+    <a class="src" data-text="movement advancement project map id divide identification barriers" href="https://www.mapresearch.org/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Movement Advancement Project <span class="arw">↗</span></span>
+      <span class="desc">The "ID divide" — who lacks a valid license, by community.</span></span>
+      <span class="badge beat">Beat</span>
+    </a>
+    <a class="src" data-text="census acs american community survey data non drivers demographics" href="https://data.census.gov/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Census — data.census.gov <span class="arw">↗</span></span>
+      <span class="desc">Non-driver demographics by income, geography, and more.</span></span>
+      <span class="badge beat">Beat</span>
+    </a>
+    <a class="src" data-text="georgia department driver services dds local license" href="https://dds.georgia.gov/" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Georgia Dept. of Driver Services <span class="arw">↗</span></span>
+      <span class="desc">The local version of the licensing and suspension story.</span></span>
+      <span class="badge beat">Beat</span>
+    </a>
+    <a class="src" data-text="iihs insurance institute highway safety teen young drivers" href="https://www.iihs.org/topics/teenagers" target="_blank" rel="noopener">
+      <span class="body"><span class="name">IIHS — Teen / Young Drivers <span class="arw">↗</span></span>
+      <span class="desc">Licensure and crash-risk data for the youngest drivers.</span></span>
+      <span class="badge beat">Beat</span>
+    </a>
+  </section>
+
+  <!-- ===================== TOOLS ===================== -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <h2>Tools</h2>
+      <span class="note">the capture side</span>
+    </div>
+
+    <a class="src" data-text="google alerts keyword email feed standing search" href="https://www.google.com/alerts" target="_blank" rel="noopener">
+      <span class="body"><span class="name">Google Alerts <span class="arw">↗</span></span>
+      <span class="desc">Set standing alerts on your beat keywords so stories come to you.</span></span>
+      <span class="badge">Setup</span>
+    </a>
+    <a class="src" data-text="google sheets intake table tracker route slots" href="https://sheets.new" target="_blank" rel="noopener">
+      <span class="body"><span class="name">New Google Sheet — intake table <span class="arw">↗</span></span>
+      <span class="desc">Columns: Date · Source · Item · Beat · Slot · Status. Everything you find lands here.</span></span>
+      <span class="badge">Setup</span>
+    </a>
+  </section>
+
+  <footer>
+    <p class="route">Routing rule: timely item → <b>Show A</b> (roundup) or a <b>Short</b>. Deep / structural item → <b>Show B</b> (deep dive). The intake's "Slot" column becomes your weekly plan.</p>
+    <p class="fine">Free public sources · links open in a new tab · if a government page has moved, the parent site still gets you there · title is a placeholder — rename it to whatever you like.</p>
+  </footer>
+
+</div>
+
+<script>
+  // Dateline clock
+  function tick(){
+    var d=new Date();
+    var opts={weekday:'short',year:'numeric',month:'short',day:'numeric'};
+    var date=d.toLocaleDateString('en-US',opts);
+    var time=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    var el=document.getElementById('dateline');
+    if(el){ el.innerHTML='Shannon, GA · <b>'+date+'</b> · '+time; }
+  }
+  tick(); setInterval(tick,30000);
+
+  // Rundown progress
+  var checks=[].slice.call(document.querySelectorAll('.src.run .chk'));
+  var total=checks.length;
+  function updateRundown(){
+    var done=0;
+    checks.forEach(function(c){
+      var card=c.closest('.src');
+      if(c.checked){ done++; card.classList.add('done'); }
+      else{ card.classList.remove('done'); }
+    });
+    var pct= total? Math.round(done/total*100):0;
+    var fill=document.getElementById('meter-fill');
+    var cnt=document.getElementById('count');
+    if(fill) fill.style.width=pct+'%';
+    if(cnt) cnt.textContent=done+' / '+total+' cleared';
+  }
+  checks.forEach(function(c){ c.addEventListener('change',updateRundown); });
+  var reset=document.getElementById('reset');
+  if(reset) reset.addEventListener('click',function(){
+    checks.forEach(function(c){ c.checked=false; });
+    updateRundown();
+  });
+  updateRundown();
+
+  // Filter
+  var filter=document.getElementById('filter');
+  if(filter){
+    filter.addEventListener('input',function(){
+      var q=filter.value.trim().toLowerCase();
+      document.querySelectorAll('[data-group]').forEach(function(group){
+        var anyVisible=false;
+        group.querySelectorAll('.src').forEach(function(card){
+          var hay=(card.getAttribute('data-text')||'')+' '+card.textContent.toLowerCase();
+          var show=!q || hay.indexOf(q)>-1;
+          card.style.display=show?'':'none';
+          if(show) anyVisible=true;
+        });
+        group.style.display=anyVisible?'':'none';
+      });
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CZTVN Live Board</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="live.css" />
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="dot"></span><span class="title">CZTVN <b>Live Board</b></span></div>
+    <div class="tools">
+      <input id="jump" type="text" placeholder="type a city to jump…" autocomplete="off" />
+      <button id="channelBtn" class="tgl">▶ Traffic Channel</button>
+      <div class="hint">1–4 jump · Space next cam · Esc back · C channel · F full</div>
+    </div>
+  </header>
+
+  <!-- THE WALL -->
+  <main id="wall" class="wall"></main>
+
+  <!-- THE CITY VIEW -->
+  <section id="cityView" class="city" hidden>
+    <div class="hero" id="hero"></div>
+    <div class="side">
+      <div id="sideMap" class="side-map"></div>
+      <div class="side-list" id="corridorList"></div>
+    </div>
+    <div class="speeder-banner" id="speederBanner" hidden></div>
+    <div class="chyron">
+      <div class="chy-city" id="chyCity">—</div>
+      <div class="chy-corridor" id="chyCorridor">—</div>
+      <div class="chy-stats" id="chyStats"></div>
+      <button class="chy-back" id="backBtn">← board</button>
+    </div>
+  </section>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/hls.min.js"></script>
+  <script src="live.js"></script>
+</body>
+</html>

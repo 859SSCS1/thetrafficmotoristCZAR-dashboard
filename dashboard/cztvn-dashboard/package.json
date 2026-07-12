@@ -1,0 +1,31 @@
+{
+  "name": "cztvn-dashboard",
+  "productName": "CZTVN Dashboard",
+  "version": "0.1.0",
+  "description": "CZTVN living-data desktop dashboard — live congestion, owned incident archive, and the auto-print Daily Road Card. Build-in-public under 859SSCS1.",
+  "author": "Josh Wayne — DJWZ Coding (DJWZ Holdings LLC)",
+  "license": "MIT",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "pack": "electron-builder --dir",
+    "dist:win": "electron-builder --win"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "tv.czar.dashboard",
+    "productName": "CZTVN Dashboard",
+    "directories": { "output": "dist" },
+    "files": ["electron/**/*", "renderer/**/*", "config/**/*", "assets/**/*"],
+    "win": { "target": ["nsis", "portable"] },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "warningsAsErrors": false }
+  }
+}

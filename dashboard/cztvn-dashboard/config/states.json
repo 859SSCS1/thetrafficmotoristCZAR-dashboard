@@ -1,0 +1,63 @@
+{
+  "_note": "GA is the wired example. Fill incidentsUrl per state, and cameraUrl per corridor (DOT camera snapshot). Points are approximate corridor locations — adjust freely.",
+  "states": [
+    {
+      "code": "GA", "name": "Georgia", "metro": "Atlanta",
+      "center": [33.7490, -84.3880], "zoom": 10, "accent": "#C9A24B",
+      "incidentsUrl": "https://511ga.org/api/v2/get/event?key={key}&format=json", "docsUrl": "https://511ga.org/", "wired": true,
+      "corridors": [
+        { "id": "ga-i285", "name": "I-285 Perimeter", "point": [33.8770, -84.4610], "postedRef": 65, "cameraUrl": "", "caution": false },
+        { "id": "ga-connector", "name": "Downtown Connector (I-75/85)", "point": [33.7710, -84.3890], "postedRef": 55, "cameraUrl": "", "caution": true },
+        { "id": "ga-400", "name": "GA-400", "point": [33.9260, -84.3460], "postedRef": 65, "cameraUrl": "", "caution": false }
+      ]
+    },
+    {
+      "code": "TN", "name": "Tennessee", "metro": "Nashville",
+      "center": [36.1627, -86.7816], "zoom": 10, "accent": "#7FB2E6",
+      "incidentsUrl": "", "docsUrl": "https://smartway.tn.gov/traffic", "wired": false,
+      "corridors": [
+        { "id": "tn-i40", "name": "I-40", "point": [36.1590, -86.7500], "postedRef": 55, "cameraUrl": "", "caution": true },
+        { "id": "tn-i24", "name": "I-24", "point": [36.1200, -86.7100], "postedRef": 65, "cameraUrl": "", "caution": false },
+        { "id": "tn-i65", "name": "I-65", "point": [36.2000, -86.7900], "postedRef": 65, "cameraUrl": "", "caution": false }
+      ]
+    },
+    {
+      "code": "OH", "name": "Ohio", "metro": "Columbus",
+      "center": [39.9612, -82.9988], "zoom": 10, "accent": "#8FD3AC",
+      "incidentsUrl": "", "docsUrl": "https://www.ohgo.com/", "wired": false,
+      "corridors": [
+        { "id": "oh-i70", "name": "I-70", "point": [39.9500, -82.9900], "postedRef": 55, "cameraUrl": "", "caution": true },
+        { "id": "oh-i71", "name": "I-71", "point": [40.0100, -82.9950], "postedRef": 65, "cameraUrl": "", "caution": false },
+        { "id": "oh-i270", "name": "I-270 Outerbelt", "point": [40.0800, -82.9200], "postedRef": 65, "cameraUrl": "", "caution": false }
+      ]
+    },
+    {
+      "code": "FL", "name": "Florida", "metro": "Orlando",
+      "center": [28.5383, -81.3792], "zoom": 10, "accent": "#E6A57F",
+      "incidentsUrl": "", "docsUrl": "https://fl511.com/", "wired": false,
+      "corridors": [
+        { "id": "fl-i4", "name": "I-4", "point": [28.5500, -81.3800], "postedRef": 55, "cameraUrl": "", "caution": true },
+        { "id": "fl-408", "name": "SR-408 East-West", "point": [28.5450, -81.3300], "postedRef": 55, "cameraUrl": "", "caution": false },
+        { "id": "fl-417", "name": "SR-417", "point": [28.6000, -81.2000], "postedRef": 70, "cameraUrl": "", "caution": false }
+      ]
+    }
+  ],
+  "schedule": {
+    "_note": "cron in local time; each entry auto-generates a Daily Road Card.",
+    "cards": [
+      { "state": "GA", "cron": "0 7 * * *",  "label": "GA morning card" },
+      { "state": "TN", "cron": "5 7 * * *",  "label": "TN morning card" },
+      { "state": "OH", "cron": "10 7 * * *", "label": "OH morning card" },
+      { "state": "FL", "cron": "15 7 * * *", "label": "FL morning card" }
+    ],
+    "destinations": { "screen": true, "file": true, "printer": false }
+  },
+  "liveBoard": {
+    "rotateSec": 12,
+    "speeder": {
+      "_note": "AGGREGATE flow only — flags a corridor when live speed exceeds its reference limit. Never identifies individuals. Monitor the driving, not the driver.",
+      "overRefPct": 0.05,
+      "cautionBonus": 0.03
+    }
+  }
+}

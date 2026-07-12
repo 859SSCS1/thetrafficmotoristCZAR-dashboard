@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CZTVN Dashboard</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="dot"></span>
+      <span class="title">CZTVN <b>Dashboard</b></span>
+      <span class="tag">living data</span>
+    </div>
+    <div class="controls">
+      <div class="switch" id="stateSwitch"></div>
+      <button id="liveBtn" class="gen">⤢ Live Board</button>
+      <button id="genBtn" class="gen">Generate Road Card</button>
+      <div class="dateline" id="dateline">—</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="map-wrap">
+      <div id="map"></div>
+      <div class="map-legend">
+        <span class="lg clear">clear</span><span class="lg mod">moderate</span><span class="lg jam">jammed</span>
+        <span class="lg-note" id="congNote">live congestion · TomTom</span>
+      </div>
+    </section>
+
+    <aside class="panels">
+      <div class="panel gauge-panel">
+        <div class="p-cap">Metro congestion</div>
+        <div class="big" id="congBig">—</div>
+        <div class="p-sub" id="congSub">awaiting live data</div>
+      </div>
+      <div class="panel">
+        <div class="p-cap">Active incidents</div>
+        <div class="big" id="incBig">—</div>
+        <div class="p-sub" id="archNote">owned archive</div>
+      </div>
+      <div class="panel top-panel">
+        <div class="p-cap">Worst on the board</div>
+        <div class="top-road" id="topRoad">—</div>
+        <div class="top-desc" id="topDesc"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="ticker"><div class="ticker-track" id="ticker">Loading incidents…</div></div>
+
+  <!-- Featured card overlay (fires on schedule or on button) -->
+  <div class="featured" id="featured" hidden>
+    <div class="featured-inner">
+      <img id="featuredImg" alt="Daily Road Card" />
+      <button class="close" id="featClose">close</button>
+    </div>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+# The Contributor Grid — hub config TEMPLATE (MediaMTX)
+# Spec: documents/The-Contributor-Grid-CMMD-GRID-2026-0711.pdf, Section IV.
+#
+# ─────────────────────────────────────────────────────────────────────────
+# THIS FILE IS A PUBLIC TEMPLATE. IT CONTAINS NO REAL STREAM KEYS.
+# Real keys are secrets (they are the hub's only auth). To run the hub:
+#
+#   1. Copy this file to  grid/mediamtx.local.yml   (gitignored)
+#   2. Add your issued keys under `paths:` there (see STREAM-KEYS.template.md)
+#   3. Run:  mediamtx.exe grid/mediamtx.local.yml
+#
+# Never add a real key to THIS file — it is committed to the public repo.
+# ─────────────────────────────────────────────────────────────────────────
+#
+# Staging: LIVE-VIEW-ONLY. Nothing is recorded until the consent-gated
+# blur pipeline (Section V, G-04) is in place. Do NOT set `record: yes` on
+# any path before then — that is the "nothing is stored until G-04" invariant.
+#
+# Contributor publishes:  rtmp://<host>:1935/<STREAMKEY>
+# Grid subscribes (HLS):  http://<host>:8888/<STREAMKEY>/index.m3u8
+# Grid subscribes (WHEP): http://<host>:8889/<STREAMKEY>/whep
+
+logLevel: info
+
+# --- protocols ---
+rtsp: no            # not used by the grid; reduce surface
+rtmp: yes           # contributor publish path
+rtmpAddress: :1935
+
+hls: yes            # the easy-win playback (Live Board hero)
+hlsAddress: :8888
+hlsAlwaysRemux: yes
+hlsVariant: lowLatency
+
+webrtc: yes         # the sub-second on-air cut (WHEP), wired later (G-05)
+webrtcAddress: :8889
+
+api: no
+metrics: no
+playback: no
+
+# --- recording: OFF at this stage (Section V / G-04 gating) ---
+pathDefaults:
+  record: no
+  overridePublisher: no   # a second publisher can NOT bump a live contributor
+
+# --- the key register ---
+# THE RULE (spec §IV.2): no key is issued without a signed contributor
+# agreement. Each real key is one `paths:` entry in mediamtx.local.yml and one
+# row in the private STREAM-KEYS.md register. Example shape (do not use as-is):
+#
+# paths:
+#   cz-t1-REPLACE_WITH_ISSUED_KEY:
+#     source: publisher
+paths: {}

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CZTVN — Data Infrastructure Ladder</title>
+<style>
+  :root{
+    --ink:#0A0E1C; --panel:#121A2E; --panel2:#18213B;
+    --steel:#2A3650; --line:#222C44;
+    --gold:#C9A24B; --gold-br:#E8CB7A;
+    --text:#D7DCE8; --muted:#8B93A8; --soft:#AEB6C8;
+    --green:#69B58C; --green-br:#8FD3AC; --green-dim:#3d6b55;
+    --rent:#B98A54;
+    --display:Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--ink); color:var(--text);
+    font-family:var(--sans); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:920px; margin:0 auto; padding:0 18px 80px;}
+
+  /* ---------- header ---------- */
+  header{ border-top:3px solid var(--gold); padding:26px 0 18px; margin-bottom:8px; }
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.22em;
+    color:var(--gold); text-transform:uppercase; margin:0 0 10px;
+  }
+  .head-row{display:flex; justify-content:space-between; align-items:flex-end; gap:18px; flex-wrap:wrap;}
+  h1{
+    font-family:var(--display); font-weight:600; font-size:34px; line-height:1.08;
+    margin:0; color:#F2F4F9; letter-spacing:.2px;
+  }
+  .sub{color:var(--soft); font-size:14.5px; margin:12px 0 0; max-width:64ch;}
+  .dateline{
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+    text-align:right; white-space:nowrap; padding-bottom:4px;
+  }
+  .dateline b{color:var(--gold-br); font-weight:600;}
+
+  /* ---------- filter ---------- */
+  .filter{ margin:22px 0 6px; position:relative; }
+  .filter input{
+    width:100%; background:var(--panel); border:1px solid var(--line);
+    color:var(--text); font-family:var(--sans); font-size:14px;
+    padding:11px 13px; border-radius:8px; outline:none;
+  }
+  .filter input:focus{border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,162,75,.18);}
+  .filter input::placeholder{color:var(--muted);}
+
+  /* ---------- legend ---------- */
+  .legend{
+    margin:18px 0 4px; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:15px 17px;
+  }
+  .legend h3{
+    font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 11px;
+  }
+  .legend .row{display:flex; gap:9px; align-items:flex-start; margin-bottom:8px; font-size:12.5px; color:var(--soft);}
+  .legend .row:last-child{margin-bottom:0;}
+  .legend .row .k{flex:none;}
+  .legend .lad{font-size:12.5px; color:var(--muted); margin-top:11px; padding-top:11px; border-top:1px solid var(--line); line-height:1.55;}
+  .legend .lad b{color:var(--gold-br); font-weight:600;}
+
+  /* ---------- rung ---------- */
+  .rung{margin-top:38px;}
+  .rung-head{
+    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:9px; margin-bottom:6px;
+  }
+  .rung-head .rn{
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em; color:var(--gold);
+    text-transform:uppercase;
+  }
+  .rung-head h2{ font-family:var(--display); font-size:22px; font-weight:600; margin:0; color:#EDEFF6; }
+  .rung-head .note{font-size:12.5px; color:var(--muted); margin-left:auto;}
+
+  /* dev-tier accent rail (where the newsdesk family meets the GitHub Lab family) */
+  .rung.dev .rung-head{border-bottom-color:var(--green-dim);}
+  .rung.dev .rung-head .rn{color:var(--green-br);}
+
+  /* ---------- ledger callout (859SSCS1) ---------- */
+  .ledger{
+    margin:14px 0 18px; background:linear-gradient(180deg,#101d17,#0d1712);
+    border:1px solid var(--green-dim); border-left:3px solid var(--green);
+    border-radius:10px; padding:15px 17px;
+  }
+  .ledger .lab{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--green-br); margin:0 0 8px; display:flex; align-items:center; gap:9px;
+  }
+  .ledger .lab .dot{width:6px; height:6px; border-radius:50%; background:var(--green-br); box-shadow:0 0 9px var(--green-br);}
+  .ledger p{font-size:13.4px; color:#C6D2C9; margin:0 0 8px; line-height:1.55;}
+  .ledger p:last-child{margin-bottom:0;}
+  .ledger .loop{font-family:var(--mono); font-size:11.5px; color:var(--green-br); letter-spacing:.05em;}
+  .ledger a{color:var(--green-br); border-bottom:1px solid rgba(143,211,172,.35);}
+
+  /* ---------- function subgroup ---------- */
+  .fn{ font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+       color:var(--muted); margin:18px 0 9px; }
+
+  /* ---------- source cards ---------- */
+  .src{
+    display:flex; align-items:flex-start; gap:13px;
+    background:var(--panel); border:1px solid var(--line);
+    border-left:3px solid var(--steel);
+    border-radius:9px; padding:13px 15px; margin-bottom:9px;
+    transition:border-color .15s, background .15s;
+  }
+  .src:hover{border-left-color:var(--gold); background:#15203a;}
+  .rung.dev .src:hover{border-left-color:var(--green);}
+  .src .body{flex:1; min-width:0;}
+  .src .name{ font-weight:600; font-size:15px; color:#F0F2F8; display:inline-flex; align-items:center; gap:7px; }
+  .src .name .arw{color:var(--gold); font-size:13px; opacity:0; transition:opacity .15s;}
+  .src:hover .name .arw{opacity:1;}
+  .rung.dev .src .name .arw{color:var(--green-br);}
+  .src .desc{font-size:13px; color:var(--soft); margin-top:3px;}
+  .src .role{
+    display:block; font-family:var(--mono); font-size:11.5px; color:var(--green-br);
+    margin-top:7px; letter-spacing:.02em;
+  }
+
+  /* right-side markers */
+  .marks{display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex:none;}
+  .badge{
+    font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase;
+    border:1px solid var(--steel); color:var(--muted);
+    padding:3px 8px; border-radius:20px; white-space:nowrap;
+  }
+  .badge.free{border-color:var(--green-dim); color:var(--green-br);}
+  .badge.dev{border-color:var(--gold); color:var(--gold-br);}
+  .badge.agency{border-color:#3c5170; color:#8fb0d6;}
+  .badge.paid{border-color:var(--gold-br); color:#0A0E1C; background:var(--gold-br); font-weight:700;}
+  .own{
+    font-family:var(--mono); font-size:9px; letter-spacing:.09em; text-transform:uppercase;
+    padding:2px 7px; border-radius:4px; white-space:nowrap; border:1px solid transparent;
+  }
+  .own.yes{color:var(--green-br); border-color:var(--green-dim);}
+  .own.no{color:var(--rent); border-color:#5c4630;}
+  .own.report{color:var(--gold-br); border-color:var(--steel);}
+  .own.gate{color:#8fb0d6; border-color:#3c5170;}
+
+  /* ---------- paid threshold banner ---------- */
+  .threshold{
+    margin:16px 0 20px; border:1px solid var(--gold); border-radius:12px;
+    background:linear-gradient(180deg,#1b2136,#141a2c);
+    padding:20px 20px 18px; position:relative; overflow:hidden;
+  }
+  .threshold::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,var(--gold),var(--gold-br),var(--gold));
+  }
+  .threshold .tlab{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--gold-br); margin:0 0 9px;
+  }
+  .threshold h4{ font-family:var(--display); font-size:19px; color:#F2F4F9; margin:0 0 8px; font-weight:600; }
+  .threshold p{font-size:13.4px; color:var(--soft); margin:0 0 8px; line-height:1.55; max-width:70ch;}
+  .threshold p:last-child{margin-bottom:0;}
+  .threshold b{color:var(--gold-br); font-weight:600;}
+
+  /* ---------- footer ---------- */
+  footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); }
+  footer .route{color:var(--soft); line-height:1.6;}
+  footer .route b{color:var(--gold-br); font-weight:600;}
+  footer .vault{font-family:var(--mono); font-size:11.5px; margin-top:12px; color:var(--green-br);}
+  footer .vault a{color:var(--green-br); border-bottom:1px solid rgba(143,211,172,.35);}
+  footer .x-link{margin-top:12px;}
+  footer .x-link a{color:var(--gold-br); border-bottom:1px solid rgba(232,203,122,.35);}
+  footer .fine{font-family:var(--mono); font-size:11px; margin-top:14px; color:#6B7488; line-height:1.6;}
+
+  @media (max-width:560px){
+    h1{font-size:27px;}
+    .dateline{text-align:left; width:100%;}
+    .head-row{align-items:flex-start;}
+    .rung-head .note{margin-left:0; width:100%;}
+    .src{flex-wrap:wrap;}
+    .marks{flex-direction:row; align-items:center; margin-top:2px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">CZTVN · Data Infrastructure</p>
+    <div class="head-row">
+      <div>
+        <h1>Traffic Data<br>Infrastructure Ladder</h1>
+      </div>
+      <div class="dateline" id="dateline">—</div>
+    </div>
+    <p class="sub">The companion to the newsdesk hub. That one pulls the news; this one maps the data infrastructure — a three-rung ladder from free-tier mastery, to the dashboard that proves it, to the first paid transaction. The rung you can reach today is the whole training ground.</p>
+  </header>
+
+  <div class="filter">
+    <input id="filter" type="text" placeholder="Filter — type a source, function, or tier">
+  </div>
+
+  <!-- ===================== LEGEND ===================== -->
+  <div class="legend" data-group>
+    <h3>How to read each card</h3>
+    <div class="row"><span class="badge free">Free</span><span class="k">Open, no key, no spend.</span></div>
+    <div class="row"><span class="badge dev">Dev-key</span><span class="k">Free developer tier — needs an API key, still no spend.</span></div>
+    <div class="row"><span class="badge agency">Agency</span><span class="k">Free to qualifying agencies/partners — access is the gate, not cost.</span></div>
+    <div class="row"><span class="badge paid">Paid</span><span class="k">Costs money. Lives on the milestone rung.</span></div>
+    <div class="row"><span class="own yes">Ownable</span><span class="own no">Rented</span><span class="k">Whether the terms let you <em>keep and reprocess</em> the data — or only access it. This flag decides what can legally feed the dashboard.</span></div>
+    <p class="lad">The ladder: <b>Rung 1</b> is where you master the free tier and build the dashboard on it. <b>Rung 2</b> is agency access to know now and partner into later. <b>Rung 3</b> is where TM CZAR Television Network, Inc. opens its account — and the first transaction should buy something you <em>own</em>, not just rent.</p>
+  </div>
+
+  <!-- ===================== RUNG 1 — FREE / DEV-TIER ===================== -->
+  <section class="rung dev" data-group>
+    <div class="rung-head">
+      <span class="rn">Rung 01</span>
+      <h2>Free &amp; Dev-Tier</h2>
+      <span class="note">the training ground · no spend</span>
+    </div>
+
+    <div class="ledger">
+      <p class="lab"><span class="dot"></span>859SSCS1 · The Open-Source Ledger</p>
+      <p>This rung isn't only a list of feeds — it's the build surface. The dashboard you assemble on these dev-tier APIs is itself a <b style="color:var(--green-br)">859SSCS1 artifact</b>: a public, dated, build-in-public demonstration of API competence, produced by the same loop the ledger runs on.</p>
+      <p class="loop">STUDY the gap → IMPLEMENT via Claude Code → CERTIFY the merged/published build → log to the Build Register.</p>
+      <p>The agent writes the code; the operator directs it and owns the record. Mastering these free resources and demonstrating that mastery in the dashboard are one goal, logged in the <a href="https://github.com/859SSCS1" target="_blank" rel="noopener">github.com/859SSCS1</a> vault.</p>
+    </div>
+
+    <p class="fn">Real-time flow &amp; incidents</p>
+
+    <a class="src" data-text="tomtom traffic api real-time flow incidents speed developer key" href="https://www.tomtom.com/products/traffic-apis/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">TomTom Traffic API <span class="arw">↗</span></span>
+        <span class="desc">Live flow (observed speeds, travel times) and incidents — closures, construction, crashes — refreshed roughly every 30–60 seconds. Free developer tier with a key.</span>
+        <span class="role">→ dashboard: the live congestion + incident layer on the map</span>
+      </span>
+      <span class="marks"><span class="badge dev">Dev-key</span><span class="own no">Rented</span></span>
+    </a>
+
+    <a class="src" data-text="here traffic api flow incidents congestion score fleet freight" href="https://www.here.com/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">HERE Traffic API <span class="arw">↗</span></span>
+        <span class="desc">Flow, incidents, and a congestion-severity score, sourced heavily from delivery and trucking fleets — strongest on freight corridors and interstates. Freemium developer access.</span>
+        <span class="role">→ dashboard: freight-corridor speed overlay; cross-check against TomTom</span>
+      </span>
+      <span class="marks"><span class="badge dev">Dev-key</span><span class="own no">Rented</span></span>
+    </a>
+
+    <a class="src" data-text="google routes api traffic-aware travel time per request maps platform" href="https://developers.google.com/maps/documentation/routes" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Google Routes API <span class="arw">↗</span></span>
+        <span class="desc">Traffic-aware routing and travel times, priced per request with a monthly free credit. Broad urban coverage from phone signals.</span>
+        <span class="role">→ dashboard: live-vs-typical travel-time deltas per corridor</span>
+      </span>
+      <span class="marks"><span class="badge dev">Dev-key</span><span class="own no">Rented</span></span>
+    </a>
+
+    <a class="src" data-text="mapbox traffic data raw speed dataset openstreetmap typical live" href="https://www.mapbox.com/traffic-data" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Mapbox Traffic Data <span class="arw">↗</span></span>
+        <span class="desc">Sells the raw speed dataset — live and typical-by-time-of-week — matched to OpenStreetMap. Free tier for SDK use; the dataset itself is licensable (see Rung 3). The closest of the four to data you can analyze, not just display.</span>
+        <span class="role">→ dashboard: the typical-week baseline live speeds get compared against</span>
+      </span>
+      <span class="marks"><span class="badge dev">Dev-key</span><span class="own no">Rented</span></span>
+    </a>
+
+    <p class="fn">City-cycle benchmarks</p>
+
+    <a class="src" data-text="inrix global traffic scorecard congestion ranking hours lost city cycle" href="https://inrix.com/scorecard/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">INRIX Global Traffic Scorecard <span class="arw">↗</span></span>
+        <span class="desc">The definitive city-cycle benchmark: three years of data across nearly 1,000 cities — per-driver hours lost, congestion cost, busiest corridors, and each metro's commute pattern. The full report is a free download. This is most of what you need to speak with authority on any city's cycle.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own report">Report</span></span>
+    </a>
+
+    <a class="src" data-text="tomtom traffic index congestion rankings city atlanta free" href="https://www.tomtom.com/traffic-index/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">TomTom Traffic Index <span class="arw">↗</span></span>
+        <span class="desc">Live and historical congestion rankings by city, including Atlanta. Already on the newsdesk hub — here it pairs with INRIX as the second cross-city yardstick.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own report">Report</span></span>
+    </a>
+
+    <p class="fn">Free government feeds</p>
+
+    <a class="src" data-text="state 511 dot feed incidents closures construction real time georgia" href="https://511ga.org/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">State 511 / DOT feed <span class="arw">↗</span></span>
+        <span class="desc">Every state runs one; Georgia 511 is the local instance. Free real-time incidents, closures, and construction — no key, no storage restriction.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own yes">Ownable</span></span>
+    </a>
+
+    <a class="src" data-text="fhwa highway statistics licensed drivers vmt annual tables" href="https://www.fhwa.dot.gov/policyinformation/statistics.cfm" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">FHWA Highway Statistics <span class="arw">↗</span></span>
+        <span class="desc">Licensed drivers by age, vehicle-miles traveled, the authoritative annual tables — the national denominator behind any per-driver claim.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own yes">Ownable</span></span>
+    </a>
+
+    <a class="src" data-text="bureau transportation statistics bts federal mobility data" href="https://www.bts.gov/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Bureau of Transportation Statistics <span class="arw">↗</span></span>
+        <span class="desc">Broad federal mobility data for a deeper cut — freight, modal splits, long-run series.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own yes">Ownable</span></span>
+    </a>
+
+    <p class="fn">Structural context — the &ldquo;why&rdquo; behind the cycle</p>
+
+    <a class="src" data-text="census onthemap lehd lodes commute origin destination block level" href="https://onthemap.ces.census.gov/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Census OnTheMap (LEHD / LODES) <span class="arw">↗</span></span>
+        <span class="desc">Home-to-work commute origin-destination down to the census-block level. Free. This is the structural reason a metro's peak looks the way it does.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own yes">Ownable</span></span>
+    </a>
+
+    <a class="src" data-text="census acs american community survey commute times mode share demographics" href="https://data.census.gov/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Census — data.census.gov (ACS) <span class="arw">↗</span></span>
+        <span class="desc">Commute times, mode share, and non-driver demographics by geography — the human layer under the traffic numbers.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own yes">Ownable</span></span>
+    </a>
+
+    <a class="src" data-text="gtfs realtime transit feed schedule vehicle position ridership multimodal" href="https://gtfs.org/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">GTFS &amp; GTFS-Realtime <span class="arw">↗</span></span>
+        <span class="desc">Open transit schedule plus live vehicle feeds. Transit ridership shifts explain much of a metro's road cycle — the multimodal half of the picture.</span>
+      </span>
+      <span class="marks"><span class="badge free">Free</span><span class="own yes">Ownable</span></span>
+    </a>
+  </section>
+
+  <!-- ===================== RUNG 2 — AGENCY ===================== -->
+  <section class="rung" data-group>
+    <div class="rung-head">
+      <span class="rn">Rung 02</span>
+      <h2>Agency Access</h2>
+      <span class="note">know now · partner into later</span>
+    </div>
+
+    <p class="fn">Partnership-gated · free to qualifying agencies</p>
+
+    <a class="src" data-text="npmrds ritis probe speed national highway performance data catt lab" href="https://ritis.org/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">NPMRDS via RITIS <span class="arw">↗</span></span>
+        <span class="desc">The FHWA probe-speed dataset for the national highway network, delivered through RITIS (University of Maryland CATT Lab). Free to qualifying public agencies and researchers — the gate is status, not price.</span>
+      </span>
+      <span class="marks"><span class="badge agency">Agency</span><span class="own gate">Gated</span></span>
+    </a>
+
+    <a class="src" data-text="waze for cities free bidirectional crowdsourced speeds slowdowns incidents partnership" href="https://www.waze.com/wazeforcities" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Waze for Cities <span class="arw">↗</span></span>
+        <span class="desc">A free, two-way partnership giving public agencies crowdsourced speeds, slowdowns, and incidents — in exchange for sharing closures back. Agency standing is the key that opens it.</span>
+      </span>
+      <span class="marks"><span class="badge agency">Agency</span><span class="own gate">Gated</span></span>
+    </a>
+  </section>
+
+  <!-- ===================== RUNG 3 — PAID (MILESTONE) ===================== -->
+  <section class="rung" data-group>
+    <div class="rung-head">
+      <span class="rn">Rung 03</span>
+      <h2>The First Transaction</h2>
+      <span class="note">the milestone rung · spend begins here</span>
+    </div>
+
+    <div class="threshold">
+      <p class="tlab">Threshold · the account opens here</p>
+      <h4>This is where TM CZAR Television Network, Inc. makes its first transaction.</h4>
+      <p>Not a shopping list — an earned graduation. The dashboard, built and proven on Rung 1, is what justifies crossing this line.</p>
+      <p>One distinction to carry through every card below: <b>paid access and paid ownership are not the same thing.</b> Higher TomTom / HERE / Google tiers still only <em>rent</em> you access — more calls, but you still can't store or redistribute. The transactions that move you toward a <em>proprietary</em> asset are the data-licensing ones. The first spend should point at something you can keep.</p>
+    </div>
+
+    <p class="fn">Buy something you own</p>
+
+    <a class="src" data-text="mapbox traffic data license raw speed dataset s3 bucket own keep reprocess" href="https://www.mapbox.com/traffic-data" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Mapbox Traffic Data — license <span class="arw">↗</span></span>
+        <span class="desc">License the raw speed dataset outright via S3/GCS delivery — you keep it and reprocess it. The clearest &ldquo;buy something you own&rdquo; candidate for a first transaction.</span>
+      </span>
+      <span class="marks"><span class="badge paid">Paid</span><span class="own yes">Ownable</span></span>
+    </a>
+
+    <a class="src" data-text="streetlight insight origin destination volumes vmt vehicle hours delay intersection license" href="https://www.streetlightdata.com/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">StreetLight InSight <span class="arw">↗</span></span>
+        <span class="desc">Licensed origin-destination, volumes, VMT, vehicle-hours of delay, and 15-minute intersection movements for nearly every road in North America. Enterprise/agency pricing; the industry-standard pattern platform.</span>
+      </span>
+      <span class="marks"><span class="badge paid">Paid</span><span class="own yes">Ownable</span></span>
+    </a>
+
+    <p class="fn">Rent broader access</p>
+
+    <a class="src" data-text="inrix analytics real time feed beyond scorecard access license" href="https://inrix.com/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">INRIX — analytics &amp; real-time <span class="arw">↗</span></span>
+        <span class="desc">Beyond the free Scorecard: real-time feeds and deeper analytics. This tier is access, not ownership — the terms don't let you store or redistribute.</span>
+      </span>
+      <span class="marks"><span class="badge paid">Paid</span><span class="own no">Rented</span></span>
+    </a>
+
+    <a class="src" data-text="replica enterprise activity travel pattern modeling platform access" href="https://replicahq.com/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">Replica <span class="arw">↗</span></span>
+        <span class="desc">Enterprise activity- and travel-pattern modeling. Platform access, priced for agencies and large operators.</span>
+      </span>
+      <span class="marks"><span class="badge paid">Paid</span><span class="own no">Rented</span></span>
+    </a>
+
+    <a class="src" data-text="tomtom here google paid tier higher call volume sla rent access" href="https://developer.tomtom.com/" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">TomTom / HERE / Google — paid tiers <span class="arw">↗</span></span>
+        <span class="desc">Higher call volumes and service levels on the same APIs from Rung 1. More of what you're renting — the terms still forbid storing or redistributing the data.</span>
+      </span>
+      <span class="marks"><span class="badge paid">Paid</span><span class="own no">Rented</span></span>
+    </a>
+
+    <p class="fn">The north star — the layer you build, not buy</p>
+
+    <a class="src" data-text="cmmd corridor capture proprietary own instrumented mobeil data endgame" href="https://github.com/859SSCS1" target="_blank" rel="noopener">
+      <span class="body">
+        <span class="name">CMMD corridor capture <span class="arw">↗</span></span>
+        <span class="desc">Your own instrumented capture — the one data layer you fully own, and the endgame the whole ladder points at. Not a purchase; a build. Every rented feed above is a placeholder until this exists.</span>
+      </span>
+      <span class="marks"><span class="badge free">Owned</span><span class="own yes">Ownable</span></span>
+    </a>
+  </section>
+
+  <footer>
+    <p class="route"><b>The ladder logic:</b> master the free tier &rarr; build the dashboard as proof &rarr; let that proof justify the first paid transaction &rarr; point that transaction at ownership, not rental. Every rung earns the next.</p>
+    <p class="vault">Vault: <a href="https://github.com/859SSCS1" target="_blank" rel="noopener">github.com/859SSCS1</a> · DJWZ Coding · DJWZ Holdings LLC — the dashboard build logs here, build-in-public.</p>
+    <p class="x-link"><a href="cztvn-source-hub.html">&larr; Sibling: the Roadway &amp; Mobility Source Hub (the newsdesk pull)</a></p>
+    <p class="route" style="margin-top:12px;">Downstream, as planned: the <b>A1 PDF</b> documents each resource and how to use it; the <b>dashboard</b> is the build that turns this ladder into a proprietary resource.</p>
+    <p class="fine">Dev-tier sources need an API key · free &amp; government feeds open in a new tab · access &ne; ownership — the &ldquo;ownable&rdquo; flag is what tells future-you which sources can legally feed the dashboard · title is a placeholder — rename freely.</p>
+  </footer>
+
+</div>
+
+<script>
+  // Dateline clock
+  function tick(){
+    var d=new Date();
+    var opts={weekday:'short',year:'numeric',month:'short',day:'numeric'};
+    var date=d.toLocaleDateString('en-US',opts);
+    var time=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    var el=document.getElementById('dateline');
+    if(el){ el.innerHTML='Shannon, GA · <b>'+date+'</b> · '+time; }
+  }
+  tick(); setInterval(tick,30000);
+
+  // Filter
+  var filter=document.getElementById('filter');
+  if(filter){
+    filter.addEventListener('input',function(){
+      var q=filter.value.trim().toLowerCase();
+      document.querySelectorAll('[data-group]').forEach(function(group){
+        var cards=group.querySelectorAll('.src');
+        if(!cards.length){ group.style.display=q?'none':''; return; }
+        var anyVisible=false;
+        cards.forEach(function(card){
+          var hay=(card.getAttribute('data-text')||'')+' '+card.textContent.toLowerCase();
+          var show=!q || hay.indexOf(q)>-1;
+          card.style.display=show?'':'none';
+          if(show) anyVisible=true;
+        });
+        group.style.display=anyVisible?'':'none';
+      });
+    });
+  }
+</script>
+</body>
+</html>
