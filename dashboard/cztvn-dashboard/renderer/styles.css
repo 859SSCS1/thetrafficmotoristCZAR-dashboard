@@ -17,7 +17,6 @@ header{display:flex;justify-content:space-between;align-items:center;
 .brand .dot{width:9px;height:9px;background:var(--gold-br);transform:rotate(45deg);box-shadow:0 0 10px var(--gold-br)}
 .brand .title{font-size:20px;color:var(--paper);font-weight:400}
 .brand .title b{color:var(--gold-br)}
-.brand .tag{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border:1px solid var(--steel);padding:2px 8px;border-radius:20px}
 .controls{display:flex;align-items:center;gap:16px}
 .switch{display:flex;gap:6px}
 .switch button{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);
