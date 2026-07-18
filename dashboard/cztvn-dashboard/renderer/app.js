@@ -18,6 +18,7 @@ async function boot() {
   });
   $('featClose').addEventListener('click', () => { $('featured').hidden = true; });
   $('liveBtn').addEventListener('click', () => window.cztvn.openLiveBoard());
+  $('dailyBtn').addEventListener('click', () => window.cztvn.openDaily());
 
   // Manual refresh — re-pull traffic tiles + congestion + incidents on demand.
   $('refreshBtn').addEventListener('click', async () => {
@@ -128,10 +129,24 @@ function drawMarkers(incs) {
 }
 
 function drawTicker(incs) {
-  if (!incs.length) { $('ticker').textContent = 'No active incidents on the board.'; return; }
-  $('ticker').innerHTML = incs.map(i =>
+  const track = $('ticker');
+  if (!incs.length) { track.style.animation = 'none'; track.textContent = 'No active incidents on the board.'; return; }
+  track.style.animation = '';   // restore CSS animation (name/timing)
+  track.innerHTML = incs.map(i =>
     `<b>${i.type}</b> ${i.road ? '· ' + i.road : ''} — ${i.description || ''}`
   ).join('<span class="sep">◆</span>');
+  // Constant reading speed regardless of incident count. Start the track at the
+  // container's right edge and run it fully off the left, at ~70 px/s — so the
+  // ticker is always showing content (no long blank gap) whether there are 3
+  // incidents or 100+. The fixed 40s loop flew by once the real feed landed.
+  requestAnimationFrame(() => {
+    const container = track.parentElement ? track.parentElement.offsetWidth : 1480;
+    const w = track.scrollWidth;
+    const travel = container + w;
+    track.style.setProperty('--tick-start', container + 'px');
+    track.style.setProperty('--tick-end', (-w) + 'px');
+    track.style.animationDuration = Math.max(20, Math.round(travel / 70)) + 's';
+  });
 }
 
 function tickClock() {

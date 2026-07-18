@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CZTVN Daily Minutes</title>
+<link rel="stylesheet" href="daily.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="dot"></span>
+      <span class="title">CZTVN <b>Daily Minutes</b></span>
+    </div>
+    <div class="controls">
+      <div class="filters" id="filters"></div>
+      <div class="datenav">
+        <button id="prevDay" title="Earlier day">◀</button>
+        <span class="date" id="dateLabel">—</span>
+        <button id="nextDay" title="Later day">▶</button>
+      </div>
+      <div class="summary" id="summary">—</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="timeline" id="timeline"></div>
+    <div class="empty" id="empty" hidden>Nothing logged for this day yet. As incidents appear and clear,
+      congestion shifts, and cards fire, they'll stack up here — scroll to relive the day.</div>
+  </main>
+
+  <script src="daily.js"></script>
+</body>
+</html>

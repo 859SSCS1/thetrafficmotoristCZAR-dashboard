@@ -18,11 +18,20 @@ const tomtom    = require('./sources/tomtom');
 const incidents = require('./sources/incidents');
 const fuel      = require('./sources/fuel');
 const archive   = require('./archive');
+const eventlog  = require('./eventlog');
 const { renderCard }     = require('./render/renderCard');
 const { startScheduler } = require('./scheduler');
 const { buildBoard }     = require('./live/board');
 
+// Daily Minutes state: last-seen incidents + congestion level, per state, to
+// detect clears and congestion shifts between refreshes.
+const seenIncidents = {};   // code -> Map(id -> incident)
+const lastCongLevel = {};   // code -> 'clear' | 'moderate' | 'heavy'
+const cap = (s) => String(s || '').charAt(0).toUpperCase() + String(s || '').slice(1);
+const congLevel = (pct) => pct == null ? null : pct < 20 ? 'clear' : pct < 45 ? 'moderate' : 'heavy';
+
 let mainWindow = null;
+let dailyWindow = null;
 let liveWindow = null;
 
 function createWindow() {
@@ -61,20 +70,79 @@ ipcMain.handle('get-incidents', async (_e, code) => {
   const st = stateBy(code);
   const list = await incidents.fetchIncidents(st);
   const added = archive.appendIncidents(st.code, list);   // archive the OWNED feed
+  logClears(st, list);                                     // Daily Minutes: note resolved incidents
   return { list, archivedNew: added };
 });
 
 ipcMain.handle('get-congestion', async (_e, code) => {
-  return tomtom.congestionForMetro(stateBy(code), process.env.TOMTOM_API_KEY);
+  const st = stateBy(code);
+  const c = await tomtom.congestionForMetro(st, process.env.TOMTOM_API_KEY);
+  logCongestion(st, c);                                    // Daily Minutes: note level shifts
+  return c;
 });
 
 ipcMain.handle('generate-card', async (_e, code, destinations) => {
   return generateCard(code, destinations || config.schedule.destinations);
 });
 
+// ---- Daily Minutes ----
+// Merge the OWNED archive (incident appearances) with the event log (clears,
+// congestion shifts, card fires) into one time-sorted day view.
+ipcMain.handle('get-events', (_e, date) => {
+  const d = date || eventlog.today();
+  const evts = eventlog.read(d);
+  for (const st of config.states) {
+    for (const inc of archive.readArchive(st.code)) {
+      if (String(inc.archivedAt || '').slice(0, 10) === d) {
+        evts.push({ ts: inc.archivedAt, kind: 'incident', state: st.code, severity: inc.severity,
+          title: `${cap(inc.type)}${inc.road ? ' · ' + inc.road : ''}`, detail: inc.description || '' });
+      }
+    }
+  }
+  return evts.sort((a, b) => (a.ts < b.ts ? 1 : a.ts > b.ts ? -1 : 0));   // newest first
+});
+ipcMain.handle('get-event-dates', () => eventlog.dates());
+ipcMain.on('open-daily', () => openDaily());
+
+function logClears(st, list) {
+  const cur = new Map(list.filter(i => !String(i.source).includes('SAMPLE')).map(i => [String(i.id), i]));
+  const prev = seenIncidents[st.code];
+  seenIncidents[st.code] = cur;
+  if (!prev) return;   // first fetch this session = baseline, don't flood
+  for (const [id, inc] of prev) {
+    if (!cur.has(id)) {
+      eventlog.log({ kind: 'cleared', state: st.code, severity: inc.severity,
+        title: `Cleared · ${inc.road || cap(inc.type)}`, detail: inc.description || '' });
+    }
+  }
+}
+
+function logCongestion(st, c) {
+  if (!c || !c.available || c.delayPct == null) return;
+  const lvl = congLevel(c.delayPct);
+  const prev = lastCongLevel[st.code];
+  lastCongLevel[st.code] = lvl;
+  if (prev && prev !== lvl) {
+    eventlog.log({ kind: 'congestion', state: st.code,
+      title: `${st.metro} congestion → ${lvl}`,
+      detail: `${c.delayPct}% delay · ${c.currentSpeed ?? '—'}/${c.freeFlowSpeed ?? '—'} mph` });
+  }
+}
+
 // ---- Live Board ----
 ipcMain.handle('get-board', () => buildBoard(config, process.env.TOMTOM_API_KEY));
 ipcMain.on('open-live-board', () => openLiveBoard());
+
+function openDaily() {
+  if (dailyWindow) { dailyWindow.focus(); return; }
+  dailyWindow = new BrowserWindow({
+    width: 1120, height: 900, backgroundColor: '#0A0E1C', title: 'CZTVN Daily Minutes',
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
+  });
+  dailyWindow.loadFile(path.join(__dirname, '..', 'renderer', 'daily.html'));
+  if (process.argv.includes('--dev')) dailyWindow.webContents.openDevTools({ mode: 'detach' });
+  dailyWindow.on('closed', () => { dailyWindow = null; });
+}
 
 function openLiveBoard() {
   if (liveWindow) { liveWindow.focus(); return; }
@@ -102,6 +170,10 @@ async function generateCard(code, destinations) {
 
   const data = { state: st, congestion, incidents: incs, fuel: fuelData, generatedAt: new Date().toISOString() };
   const result = await renderCard(data, destinations);
+
+  // Daily Minutes: mark the card fire in the day's timeline.
+  eventlog.log({ kind: 'card', state: st.code, title: `Daily Road Card · ${st.code}`,
+    detail: `${(incs || []).length} incidents · ${congestion && congestion.delayPct != null ? congestion.delayPct + '% congestion' : 'congestion n/a'}` });
 
   // Destination 1: on-screen featured panel for the livestream.
   if (destinations.screen && mainWindow) {

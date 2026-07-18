@@ -55,10 +55,12 @@ main{flex:1;display:grid;grid-template-columns:1fr 340px;gap:16px;padding:16px;m
 /* ticker */
 .ticker{flex:none;border-top:1px solid var(--line);background:#0d1526;overflow:hidden;white-space:nowrap}
 .ticker-track{display:inline-block;padding:10px 0;font-family:var(--mono);font-size:13px;color:var(--soft);
-  animation:scroll 40s linear infinite}
+  animation:scroll 40s linear infinite;will-change:transform}
 .ticker-track b{color:var(--amber)}
 .ticker-track .sep{color:var(--gold);margin:0 18px}
-@keyframes scroll{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+/* Start at the container's right edge, exit past the left — pixel offsets set
+   in JS so the text is visible the whole cycle regardless of track width. */
+@keyframes scroll{from{transform:translateX(var(--tick-start,100%))}to{transform:translateX(var(--tick-end,-100%))}}
 
 /* featured overlay */
 .featured{position:fixed;inset:0;background:rgba(5,8,16,.9);display:flex;align-items:center;justify-content:center;z-index:1000}

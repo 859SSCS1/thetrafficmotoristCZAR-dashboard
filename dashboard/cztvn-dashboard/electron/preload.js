@@ -9,5 +9,9 @@ contextBridge.exposeInMainWorld('cztvn', {
   onFeaturedCard: (cb) => ipcRenderer.on('featured-card', (_e, payload) => cb(payload)),
   // Live Board
   getBoard:       ()                    => ipcRenderer.invoke('get-board'),
-  openLiveBoard:  ()                    => ipcRenderer.send('open-live-board')
+  openLiveBoard:  ()                    => ipcRenderer.send('open-live-board'),
+  // Daily Minutes
+  getEvents:      (date)                => ipcRenderer.invoke('get-events', date),
+  getEventDates:  ()                    => ipcRenderer.invoke('get-event-dates'),
+  openDaily:      ()                    => ipcRenderer.send('open-daily')
 });

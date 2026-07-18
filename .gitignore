@@ -21,6 +21,7 @@ grid/STREAM-KEYS.md
 # ─── Owned data archive (the CMMD capture — private, not for the repo) ───
 dashboard/cztvn-dashboard/data/archive/*
 !dashboard/cztvn-dashboard/data/archive/.gitkeep
+dashboard/cztvn-dashboard/data/events/
 
 # ─── Local toolchain / caches ───────────────────────────────────────────
 tools/
