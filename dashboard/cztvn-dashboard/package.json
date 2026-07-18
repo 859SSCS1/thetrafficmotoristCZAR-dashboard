@@ -1,7 +1,7 @@
 {
   "name": "cztvn-dashboard",
   "productName": "CZTVN Dashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CZTVN living-data desktop dashboard — live congestion, owned incident archive, and the auto-print Daily Road Card. Build-in-public under 859SSCS1.",
   "author": "Josh Wayne — DJWZ Coding (DJWZ Holdings LLC)",
   "license": "MIT",
